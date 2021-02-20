@@ -1,25 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import loader from './assets/loader.gif';
+import UserService from './services/usersService';
+import './App.css'
+export const UserComponent = () => {
+  
+  const dispatch = useDispatch();
+  const usersInfo = useSelector((state) => state.usersData);
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+  useEffect(() => {
+    dispatch({ type: 'LOAD_USERS', payload: null })
+    UserService.getUsers().then(users => {
+       dispatch({ type: 'GET_USERS', payload: users })
+      })
+      .catch(() => {
+        dispatch({ type: 'ERROR_USERS', payload: null })
+      })
+      .finally(() => {
+        
+      })
+    }, [dispatch])
+
+
+
+  
+  const errorContainer = () => {
+    return <div>ERROR IN API</div>;
+  }
+  const showLoader = () => {
+    return <div><img src={loader} alt="loading ..." title ="loading ..."/></div>;
+  }
+
+  const renderData = (usersInfo) => {
+    return usersInfo.error ? errorContainer():
+    <div className="container">
+    <div className="header">
+    <div>NAME</div>
+    <div>EMAIL</div>
+    <div>PHONE</div>
+    <div>WEBSITE</div>    
     </div>
-  );
+    {usersInfo.usersList.map((user, index) =>
+    <div className="row" key={index}>
+    <div> { user.name } </div>
+    <div>{ user.email }</div>
+    <div>{ user.phone } </div>
+    <div>{ user.website } </div>    
+    </div>
+  )}
+  </div>
+  }
+
+  return (    
+    usersInfo.loading ? showLoader() : renderData(usersInfo)
+  )
 }
 
-export default App;
+export default UserComponent;
