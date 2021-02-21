@@ -1,11 +1,12 @@
 import axios from 'axios';
 import config from '../config';
-const UserService =  {
- getUsers(){
-        return axios.get(config.baseUrl+config.endPoints.users)
+
+const Communication = {
+    getMethod(endpoint) {
+        return axios.get(config.baseUrl + endpoint)
             .then(response => {
                 return response.data;
             })
     }
 };
-export default UserService;
+export default Communication;
